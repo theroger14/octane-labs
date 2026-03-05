@@ -4,14 +4,13 @@ import Footer from "@/components/Footer";
 
 export const metadata = {
   title: "Octane Labs | Impresión 3D",
-  description:
-    "Impresión 3D de alta calidad: piezas funcionales, prototipos y personalizados. Cotiza subiendo tu STL.",
+  description: "Piezas impresas en 3D sin complicaciones. Sube tu solicitud o cuéntanos tu idea.",
 };
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es">
-      <body>
+      <body className="bg-[#F6F7F9] text-[#0F172A]">
         <Navbar />
         <main>{children}</main>
         <Footer />
