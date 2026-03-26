@@ -78,6 +78,9 @@ export default function DashboardPage() {
             <p className="text-xs text-zinc-500">{userEmail}</p>
           </div>
           <div className="flex items-center gap-4">
+            <a href="/admin/products" className="text-sm text-zinc-600 hover:text-zinc-900 transition">
+              Productos
+            </a>
             <a href="/" className="text-sm text-zinc-600 hover:text-zinc-900 transition">
               Ver sitio
             </a>

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 
 function useReveal(threshold = 0.12) {
   const ref = useRef(null)
@@ -17,126 +18,6 @@ function useReveal(threshold = 0.12) {
     return () => obs.disconnect()
   }, [threshold])
   return [ref, visible]
-}
-
-function useCounter(target, duration, active) {
-  const [count, setCount] = useState(0)
-  useEffect(() => {
-    if (!active) return
-    let start = null
-    const step = (ts) => {
-      if (!start) start = ts
-      const p = Math.min((ts - start) / duration, 1)
-      const ease = 1 - Math.pow(1 - p, 3)
-      setCount(Math.floor(ease * target))
-      if (p < 1) requestAnimationFrame(step)
-      else setCount(target)
-    }
-    requestAnimationFrame(step)
-  }, [active, target, duration])
-  return count
-}
-
-// ─── NAVBAR ───────────────────────────────────────────────────────────────────
-function Navbar() {
-  const [scrolled, setScrolled] = useState(false)
-  const [menuOpen, setMenuOpen] = useState(false)
-
-  useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 48)
-    window.addEventListener("scroll", fn)
-    return () => window.removeEventListener("scroll", fn)
-  }, [])
-
-  const navLinks = [
-    ["Servicios",  "#servicios"],
-    ["Proceso",    "#proceso"],
-    ["Portfolio",  "#portfolio"],
-    ["FAQ",        "/faq"],
-    ["Contacto",   "/contact"],
-  ]
-
-  return (
-    <nav style={{
-      position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-      background: scrolled ? "rgba(255,255,255,0.92)" : "rgba(255,255,255,0)",
-      backdropFilter: scrolled ? "blur(16px)" : "none",
-      borderBottom: scrolled ? "1px solid #E2E8F0" : "1px solid transparent",
-      transition: "all 0.35s ease",
-      padding: "0 1.5rem",
-    }}>
-      <div style={{
-        maxWidth: "1200px", margin: "0 auto",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        height: "68px",
-      }}>
-
-        {/* Logo */}
-        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "8px" }}>
-          {/* ▼ REEMPLAZA con: <img src="/logo.svg" alt="Octane Lab" height="32" /> */}
-          <div style={{ width: "32px", height: "32px", background: "#F97316", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span style={{ color: "#fff", fontWeight: "900", fontSize: "1rem", fontFamily: "'Outfit', sans-serif" }}>O</span>
-          </div>
-          <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: "700", fontSize: "1.15rem", color: "#1E293B", letterSpacing: "-0.01em" }}>
-            Octane<span style={{ color: "#F97316" }}>Lab</span>
-          </span>
-        </Link>
-
-        {/* Desktop links */}
-        <div style={{ display: "flex", alignItems: "center", gap: "2rem" }} className="ol-desktop-nav">
-          {navLinks.map(([label, href]) => (
-            <Link key={label} href={href}
-              style={{ fontFamily: "'Outfit', sans-serif", fontSize: "0.9rem", fontWeight: "500", color: "#64748B", textDecoration: "none", transition: "color 0.2s" }}
-              onMouseEnter={(e) => e.currentTarget.style.color = "#1E293B"}
-              onMouseLeave={(e) => e.currentTarget.style.color = "#64748B"}
-            >
-              {label}
-            </Link>
-          ))}
-        </div>
-
-        {/* CTA */}
-        <div className="ol-desktop-nav">
-          <Link href="/quote" style={{
-            fontFamily: "'Outfit', sans-serif", fontSize: "0.875rem", fontWeight: "600",
-            color: "#fff", background: "#F97316", padding: "0.55rem 1.25rem", borderRadius: "8px",
-            textDecoration: "none", transition: "background 0.2s, transform 0.15s",
-            boxShadow: "0 1px 3px rgba(249,115,22,0.35)",
-          }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "#EA6C0A"; e.currentTarget.style.transform = "translateY(-1px)" }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = "#F97316"; e.currentTarget.style.transform = "translateY(0)" }}
-          >
-            Cotizar gratis
-          </Link>
-        </div>
-
-        {/* Mobile hamburger */}
-        <button onClick={() => setMenuOpen(!menuOpen)} className="ol-mobile-btn"
-          style={{ display: "none", background: "none", border: "none", cursor: "pointer", padding: "4px", flexDirection: "column", gap: "5px" }}
-          aria-label="Menú">
-          {[0, 1, 2].map((i) => (
-            <span key={i} style={{ display: "block", width: "22px", height: "2px", background: "#1E293B", borderRadius: "2px" }} />
-          ))}
-        </button>
-      </div>
-
-      {/* Mobile menu */}
-      {menuOpen && (
-        <div style={{ background: "#fff", borderTop: "1px solid #E2E8F0", padding: "1.25rem 1.5rem 1.75rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
-          {navLinks.map(([label, href]) => (
-            <Link key={label} href={href} onClick={() => setMenuOpen(false)}
-              style={{ fontFamily: "'Outfit', sans-serif", fontSize: "1rem", fontWeight: "500", color: "#475569", textDecoration: "none" }}>
-              {label}
-            </Link>
-          ))}
-          <Link href="/quote" onClick={() => setMenuOpen(false)}
-            style={{ fontFamily: "'Outfit', sans-serif", fontWeight: "600", fontSize: "0.95rem", background: "#F97316", color: "#fff", padding: "0.8rem 1.2rem", borderRadius: "10px", textAlign: "center", textDecoration: "none", marginTop: "0.5rem" }}>
-            Cotizar gratis
-          </Link>
-        </div>
-      )}
-    </nav>
-  )
 }
 
 // ─── HERO ─────────────────────────────────────────────────────────────────────
@@ -216,38 +97,23 @@ function Hero() {
             </a>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginTop: "2.5rem", paddingTop: "2rem", borderTop: "1px solid #E2E8F0" }}>
-            <div style={{ display: "flex" }}>
-              {["#FDA4AF", "#86EFAC", "#93C5FD", "#FCD34D"].map((c, i) => (
-                <div key={i} style={{ width: "30px", height: "30px", borderRadius: "50%", background: c, marginLeft: i > 0 ? "-8px" : "0", border: "2px solid #fff" }} />
-              ))}
-            </div>
-            <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: "0.82rem", color: "#64748B" }}>
-              <strong style={{ color: "#0F172A" }}>+500 clientes</strong> ya cotizaron con nosotros
-            </p>
-          </div>
         </div>
 
         {/* RIGHT — Image */}
         <div style={{ opacity: loaded ? 1 : 0, transform: loaded ? "translateY(0)" : "translateY(32px)", transition: "opacity 0.7s ease 0.2s, transform 0.7s ease 0.2s", position: "relative" }}>
-          {/*
-            ▼ REEMPLAZA EL PLACEHOLDER CON TU FOTO REAL:
-            <img src="/hero-pieza.jpg" alt="Pieza impresa 3D"
-              style={{ width: "100%", borderRadius: "24px", boxShadow: "0 24px 64px rgba(0,0,0,0.12)" }} />
-          */}
           <div style={{
-            aspectRatio: "4/3", background: "linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%)",
+            aspectRatio: "4/3",
             borderRadius: "24px", boxShadow: "0 24px 64px rgba(15,23,42,0.1)",
-            display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "0.75rem",
             position: "relative", overflow: "hidden",
           }}>
-            <span style={{ fontSize: "4rem" }}>🖨️</span>
-            <span style={{ fontFamily: "'Roboto Mono', monospace", fontSize: "0.72rem", color: "#94A3B8", letterSpacing: "0.1em" }}>
-              // INSERTA TU FOTO AQUÍ
-            </span>
-            <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: "0.82rem", color: "#CBD5E1", maxWidth: "200px", textAlign: "center" }}>
-              Foto de tu mejor pieza 3D
-            </span>
+            <Image
+              src="/images/hero/Mechanical printing.png"
+              alt="Pieza impresa en 3D por OctaneLab"
+              fill
+              priority
+              style={{ objectFit: "cover" }}
+              sizes="(max-width: 768px) 100vw, 50vw"
+            />
             <div style={{ position: "absolute", bottom: "1.5rem", left: "1.5rem", background: "#fff", borderRadius: "12px", padding: "0.75rem 1rem", boxShadow: "0 4px 20px rgba(0,0,0,0.12)", display: "flex", alignItems: "center", gap: "0.6rem" }}>
               <div style={{ width: "36px", height: "36px", background: "#FFF7ED", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.1rem" }}>⚡</div>
               <div>
@@ -292,10 +158,10 @@ function HowItWorks() {
   const [ref, visible] = useReveal()
 
   const steps = [
-    { n: "01", icon: "📎", title: "Sube tu archivo", desc: "STL, STEP, OBJ o DXF. Si no tienes archivo, cuéntanos tu idea y te ayudamos.", bg: "#EFF6FF", border: "#BFDBFE" },
-    { n: "02", icon: "💬", title: "Recibe presupuesto", desc: "En menos de 4 horas: precio, material sugerido y tiempo de entrega.", bg: "#FFF7ED", border: "#FED7AA" },
-    { n: "03", icon: "🖨️", title: "Imprimimos tu pieza", desc: "Control de calidad en cada capa. PLA, PETG, Nylon, ABS, Resina y más.", bg: "#F0FDF4", border: "#BBF7D0" },
-    { n: "04", icon: "📦", title: "Recíbela en casa", desc: "Envío a todo México en 24-72h o recolección en Morelia, Michoacán.", bg: "#FDF4FF", border: "#E9D5FF" },
+    { n: "01", icon: "📎", title: "Sube tu archivo", desc: "STL, STEP, OBJ o DXF. Si no tienes archivo, cuéntanos tu idea y te ayudamos.", bg: "#EFF6FF", border: "#BFDBFE", img: "/images/hero/Upload.png" },
+    { n: "02", icon: "💬", title: "Recibe presupuesto", desc: "En menos de 4 horas: precio, material sugerido y tiempo de entrega.", bg: "#FFF7ED", border: "#FED7AA", img: "/images/hero/Quoatation.png" },
+    { n: "03", icon: "🖨️", title: "Imprimimos tu pieza", desc: "Control de calidad en cada capa. PLA, PETG, Nylon, ABS, Resina y más.", bg: "#F0FDF4", border: "#BBF7D0", img: "/images/hero/extrusion wallpaper.png" },
+    { n: "04", icon: "📦", title: "Recíbela en casa", desc: "Envío a todo México en 24-72h o recolección en Morelia, Michoacán.", bg: "#FDF4FF", border: "#E9D5FF", img: "/images/hero/Unboxin 3d print.png" },
   ]
 
   return (
@@ -325,7 +191,7 @@ function HowItWorks() {
               onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none" }}
             >
               <div style={{ fontFamily: "'Roboto Mono', monospace", fontSize: "0.65rem", color: "#94A3B8", letterSpacing: "0.12em", marginBottom: "1rem" }}>{s.n}</div>
-              <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>{s.icon}</div>
+              <img src={s.img} alt={s.title} style={{ width: "100%", height: "140px", objectFit: "cover", borderRadius: "12px", marginBottom: "1rem" }} />
               <h3 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: "700", fontSize: "1.05rem", color: "#0F172A", marginBottom: "0.6rem" }}>{s.title}</h3>
               <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: "0.85rem", color: "#64748B", lineHeight: "1.7" }}>{s.desc}</p>
             </div>
@@ -412,38 +278,6 @@ function Services() {
   )
 }
 
-// ─── STATS ────────────────────────────────────────────────────────────────────
-function Stats() {
-  const [ref, visible] = useReveal()
-  const v1 = useCounter(500, 1600, visible)
-  const v2 = useCounter(24,  1200, visible)
-  const v3 = useCounter(12,  1400, visible)
-  const v4 = useCounter(99,  1800, visible)
-
-  const items = [
-    { value: v1, suffix: "+", label: "Proyectos entregados", icon: "📦" },
-    { value: v2, suffix: "h", label: "Tiempo mínimo de entrega", icon: "⚡" },
-    { value: v3, suffix: "+", label: "Materiales disponibles", icon: "🎯" },
-    { value: v4, suffix: "%", label: "Clientes satisfechos", icon: "⭐" },
-  ]
-
-  return (
-    <section style={{ background: "#0F172A", padding: "6rem 1.5rem" }}>
-      <div ref={ref} style={{ maxWidth: "1200px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "2rem" }} className="ol-stats-grid">
-        {items.map((item, i) => (
-          <div key={item.label} style={{ textAlign: "center", opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(20px)", transition: "opacity 0.5s ease " + i * 0.1 + "s, transform 0.5s ease " + i * 0.1 + "s" }}>
-            <div style={{ fontSize: "1.75rem", marginBottom: "0.75rem" }}>{item.icon}</div>
-            <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: "800", fontSize: "clamp(2.5rem, 4vw, 3.5rem)", color: "#fff", lineHeight: 1, letterSpacing: "-0.02em" }}>
-              {item.value}<span style={{ color: "#F97316" }}>{item.suffix}</span>
-            </div>
-            <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: "0.875rem", color: "#64748B", marginTop: "0.5rem" }}>{item.label}</div>
-          </div>
-        ))}
-      </div>
-    </section>
-  )
-}
-
 // ─── PORTFOLIO ────────────────────────────────────────────────────────────────
 function Portfolio() {
   const [ref, visible] = useReveal()
@@ -451,12 +285,12 @@ function Portfolio() {
   const cats = ["Todos", "Ingeniería", "Hogar", "Medicina", "Industrial"]
 
   const items = [
-    { id: 1, label: "Brazo robótico articulado", cat: "Ingeniería", mat: "ABS", emoji: "🦾", bg: "#EFF6FF", span: 2 },
-    { id: 2, label: "Modelo anatómico dental", cat: "Medicina", mat: "Resina biocompatible", emoji: "🦷", bg: "#F0FDF4", span: 1 },
-    { id: 3, label: "Carcasa electrónica IP67", cat: "Industrial", mat: "PETG", emoji: "🔒", bg: "#FFF7ED", span: 1 },
-    { id: 4, label: "Soporte de pared modular", cat: "Hogar", mat: "PLA multicolor", emoji: "🏠", bg: "#FDF4FF", span: 1 },
-    { id: 5, label: "Engranaje planetario", cat: "Ingeniería", mat: "Nylon PA12", emoji: "⚙️", bg: "#FFF1F2", span: 1 },
-    { id: 6, label: "Prototipo aeronáutico", cat: "Ingeniería", mat: "ABS + fibra de carbono", emoji: "✈️", bg: "#ECFDF5", span: 2 },
+    { id: 1, label: "Brazo robótico articulado", cat: "Ingeniería", mat: "ABS", src: "/images/hero/Gemini_Generated_Image_41nzxw41nzxw41nz.png", span: 2 },
+    { id: 2, label: "Modelo anatómico dental", cat: "Medicina", mat: "Resina biocompatible", src: "/images/hero/Gemini_Generated_Image_810pt8810pt8810p.png", span: 1 },
+    { id: 3, label: "Carcasa electrónica IP67", cat: "Industrial", mat: "PETG", src: "/images/hero/Gemini_Generated_Image_d9eaamd9eaamd9ea.png", span: 1 },
+    { id: 4, label: "Soporte de pared modular", cat: "Hogar", mat: "PLA multicolor", src: "/images/hero/Gemini_Generated_Image_hfyqsnhfyqsnhfyq.png", span: 1 },
+    { id: 5, label: "Engranaje planetario", cat: "Ingeniería", mat: "Nylon PA12", src: "/images/hero/Gemini_Generated_Image_ic1bphic1bphic1b.png", span: 1 },
+    { id: 6, label: "Prototipo aeronáutico", cat: "Ingeniería", mat: "ABS + fibra de carbono", src: "/images/hero/Gemini_Generated_Image_j4cqc4j4cqc4j4cq.png", span: 2 },
   ]
 
   const filtered = active === "Todos" ? items : items.filter((i) => i.cat === active)
@@ -518,8 +352,14 @@ function PortfolioCard({ item, index, visible }) {
         display: "flex", alignItems: "center", justifyContent: "center",
       }}
     >
-      {/* ▼ Reemplaza con: <img src={item.src} alt={item.label} style={{ width:"100%", height:"100%", objectFit:"cover" }} /> */}
-      <span style={{ fontSize: "3.5rem", transition: "transform 0.3s", transform: hov ? "scale(1.15)" : "scale(1)" }}>{item.emoji}</span>
+      <Image
+        src={item.src}
+        alt={item.label}
+        fill
+        loading="lazy"
+        style={{ objectFit: "cover", transition: "transform 0.3s", transform: hov ? "scale(1.05)" : "scale(1)" }}
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      />
 
       <div style={{
         position: "absolute", inset: 0,
@@ -548,9 +388,6 @@ function Testimonials() {
     <section style={{ background: "#F8FAFC", padding: "7rem 1.5rem" }}>
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
         <div ref={ref} style={{ textAlign: "center", marginBottom: "3.5rem", opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(20px)", transition: "opacity 0.6s, transform 0.6s" }}>
-          <div style={{ fontFamily: "'Roboto Mono', monospace", fontSize: "0.7rem", letterSpacing: "0.15em", color: "#F97316", textTransform: "uppercase", marginBottom: "0.75rem" }}>
-            // Clientes
-          </div>
           <h2 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: "800", fontSize: "clamp(2rem, 4vw, 2.75rem)", color: "#0F172A", letterSpacing: "-0.02em" }}>
             Lo que dicen quienes ya<br />fabricaron con nosotros
           </h2>
@@ -642,9 +479,7 @@ function Footer() {
         <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: "3rem", marginBottom: "4rem" }} className="ol-footer-grid">
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "1rem" }}>
-              <div style={{ width: "28px", height: "28px", background: "#F97316", borderRadius: "7px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <span style={{ color: "#fff", fontWeight: "900", fontSize: "0.85rem", fontFamily: "'Outfit', sans-serif" }}>O</span>
-              </div>
+              <img src="/images/hero/Logo.png" alt="Octane Lab logo" style={{ width: "28px", height: "28px", objectFit: "contain" }} />
               <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: "700", fontSize: "1rem", color: "#fff" }}>
                 Octane<span style={{ color: "#F97316" }}>Lab</span>
               </span>
@@ -707,36 +542,25 @@ export default function HomePage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap');
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; }
-        body { background: #fff; color: #1E293B; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
-
         @media (max-width: 1024px) {
           .ol-hero-grid      { grid-template-columns: 1fr !important; }
           .ol-steps-grid     { grid-template-columns: repeat(2, 1fr) !important; }
           .ol-services-grid  { grid-template-columns: 1fr !important; }
-          .ol-stats-grid     { grid-template-columns: repeat(2, 1fr) !important; }
           .ol-reviews-grid   { grid-template-columns: 1fr !important; }
           .ol-footer-grid    { grid-template-columns: 1fr 1fr !important; }
           .ol-portfolio-grid { grid-template-columns: 1fr 1fr !important; }
         }
         @media (max-width: 768px) {
-          .ol-desktop-nav    { display: none !important; }
-          .ol-mobile-btn     { display: flex !important; }
           .ol-steps-grid     { grid-template-columns: 1fr !important; }
-          .ol-stats-grid     { grid-template-columns: repeat(2, 1fr) !important; }
           .ol-portfolio-grid { grid-template-columns: 1fr !important; }
           .ol-footer-grid    { grid-template-columns: 1fr !important; }
         }
       `}</style>
 
-      <Navbar />
       <Hero />
       <TrustBar />
       <HowItWorks />
       <Services />
-      <Stats />
       <Portfolio />
       <Testimonials />
       <CTAFinal />

@@ -26,11 +26,11 @@ export async function middleware(request) {
 
   const { data: { session } } = await supabase.auth.getSession()
 
-  const isLoginPage = request.nextUrl.pathname === '/admin/login'
-  const isDashboard = request.nextUrl.pathname.startsWith('/admin/dashboard')
+  const isLoginPage  = request.nextUrl.pathname === '/admin/login'
+  const isProtected  = request.nextUrl.pathname.startsWith('/admin') && !isLoginPage
 
-  // Sin sesión intentando entrar al dashboard → redirigir al login
-  if (isDashboard && !session) {
+  // Sin sesión intentando entrar a cualquier ruta admin → redirigir al login
+  if (isProtected && !session) {
     return NextResponse.redirect(new URL('/admin/login', request.url))
   }
 
