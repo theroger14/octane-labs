@@ -12,51 +12,69 @@ function getStatusClass(status) {
 }
 
 function formatDate(dateStr) {
-  return new Date(dateStr).toLocaleDateString("es-AR", {
+  return new Date(dateStr).toLocaleDateString("es-MX", {
     day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit",
   })
 }
 
+function fmtMXN(n) {
+  if (n == null) return "—"
+  return new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 2 }).format(n)
+}
+
 export default function QuoteRow({ quote, onStatusChange }) {
-  const stlLink = quote.stl_file_url
-    ? <a href={quote.stl_file_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-xs font-medium">Descargar STL</a>
+  const materialName = quote.materials?.name ?? "—"
+
+  const fileEl = quote.file_url
+    ? <a href={quote.file_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-xs font-medium">
+        {quote.file_name ?? "Descargar STL"}
+      </a>
     : <span className="text-zinc-400 text-xs">Sin archivo</span>
-
-  const phoneEl = quote.phone
-    ? <p className="text-xs text-zinc-400">{quote.phone}</p>
-    : null
-
-  const colorEl = quote.color
-    ? <p className="text-xs text-zinc-400">{quote.color}</p>
-    : null
-
-  const quantityEl = quote.quantity > 1
-    ? <p className="text-xs text-zinc-400">x{quote.quantity} unidades</p>
-    : null
 
   return (
     <tr className="hover:bg-zinc-50 transition">
-      <td className="px-6 py-4 text-zinc-500 whitespace-nowrap">
+      <td className="px-6 py-4 text-zinc-500 whitespace-nowrap text-sm">
         {formatDate(quote.created_at)}
       </td>
       <td className="px-6 py-4">
-        <p className="font-medium text-zinc-900">{quote.name}</p>
-        <a href={"mailto:" + quote.email} className="text-xs text-blue-600 hover:underline">{quote.email}</a>
-        {phoneEl}
+        <p className="font-medium text-zinc-900">{quote.customer_name ?? "—"}</p>
+        {quote.customer_email && (
+          <a href={"mailto:" + quote.customer_email} className="text-xs text-blue-600 hover:underline">
+            {quote.customer_email}
+          </a>
+        )}
       </td>
       <td className="px-6 py-4">
-        <p className="text-zinc-700">{quote.material || "—"}</p>
-        {colorEl}
-        {quantityEl}
+        <p className="text-zinc-700">{materialName}</p>
+        <p className="text-xs text-zinc-400">Relleno: {quote.infill_percent}%</p>
+        {quote.quantity > 1 && (
+          <p className="text-xs text-zinc-400">×{quote.quantity} unidades</p>
+        )}
       </td>
       <td className="px-6 py-4">
-        {stlLink}
+        {quote.volume_cm3 != null && (
+          <p className="text-xs text-zinc-600">{quote.volume_cm3} cm³</p>
+        )}
+        {quote.weight_grams != null && (
+          <p className="text-xs text-zinc-400">{quote.weight_grams} g</p>
+        )}
+        {quote.print_time_hours != null && (
+          <p className="text-xs text-zinc-400">{quote.print_time_hours} h</p>
+        )}
+      </td>
+      <td className="px-6 py-4">
+        <p className="font-semibold text-zinc-900">{fmtMXN(quote.total_price)}</p>
+        {fileEl}
       </td>
       <td className="px-6 py-4 max-w-xs">
-        <p className="text-zinc-600 text-xs line-clamp-2">{quote.notes || "—"}</p>
+        <p className="text-zinc-600 text-xs line-clamp-2">{quote.notes ?? "—"}</p>
       </td>
       <td className="px-6 py-4">
-        <select value={quote.status} onChange={(e) => onStatusChange(quote.id, e.target.value)} className={getStatusClass(quote.status)}>
+        <select
+          value={quote.status}
+          onChange={(e) => onStatusChange(quote.id, e.target.value)}
+          className={getStatusClass(quote.status)}
+        >
           {Object.entries(STATUS_LABELS).map(([key, val]) => (
             <option key={key} value={key}>{val.label}</option>
           ))}

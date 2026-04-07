@@ -122,7 +122,7 @@ export default async function ProductDetailPage({ params }) {
               </div>
 
               <p className="text-xs text-zinc-400">
-                El precio puede variar según configuración final. Te enviamos cotización exacta por WhatsApp o email.
+                El precio puede variar según configuración final. Te enviamos cotización exacta por email.
               </p>
             </div>
 

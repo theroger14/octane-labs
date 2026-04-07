@@ -26,7 +26,7 @@ export default function DashboardPage() {
     setLoading(true)
     const { data, error } = await supabase
       .from("quotes")
-      .select("*")
+      .select("*, materials(name)")
       .order("created_at", { ascending: false })
     if (!error) setQuotes(data)
     setLoading(false)
@@ -150,7 +150,8 @@ export default function DashboardPage() {
                     <th className="text-left px-6 py-3 font-medium text-zinc-500">Fecha</th>
                     <th className="text-left px-6 py-3 font-medium text-zinc-500">Cliente</th>
                     <th className="text-left px-6 py-3 font-medium text-zinc-500">Material</th>
-                    <th className="text-left px-6 py-3 font-medium text-zinc-500">Archivo STL</th>
+                    <th className="text-left px-6 py-3 font-medium text-zinc-500">Pieza</th>
+                    <th className="text-left px-6 py-3 font-medium text-zinc-500">Precio</th>
                     <th className="text-left px-6 py-3 font-medium text-zinc-500">Notas</th>
                     <th className="text-left px-6 py-3 font-medium text-zinc-500">Estado</th>
                   </tr>

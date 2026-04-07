@@ -70,26 +70,11 @@ function PageFooter() {
 // ─── CONTACT CHANNELS ─────────────────────────────────────────────────────────
 const CHANNELS = [
   {
-    icon: "💬",
-    title: "WhatsApp",
-    desc: "Respuesta en minutos. Ideal para dudas rápidas o enviar fotos de referencia.",
-    action: "Abrir WhatsApp",
-    // ▼ Reemplaza con tu número real (sin espacios ni guiones)
-    href: "https://wa.me/52XXXXXXXXXX?text=Hola%2C+necesito+cotizar+una+pieza+3D",
-    badge: "Más rápido",
-    badgeColor: "#F0FDF4",
-    badgeBorder: "#BBF7D0",
-    badgeText: "#15803D",
-    bg: "#F0FDF4",
-    border: "#BBF7D0",
-  },
-  {
     icon: "✉️",
     title: "Email",
     desc: "Para proyectos detallados, licitaciones o información de tu empresa.",
     action: "Enviar email",
-    // ▼ Reemplaza con tu correo real
-    href: "mailto:hola@octanelab.mx",
+    href: "mailto:octanelab2@gmail.com",
     badge: "Formal",
     badgeColor: "#EFF6FF",
     badgeBorder: "#BFDBFE",
@@ -402,12 +387,6 @@ export default function ContactPage() {
                   }}>{time}</span>
                 </div>
               ))}
-              <div style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: "10px", padding: "0.75rem 1rem", marginTop: "1rem", display: "flex", gap: "0.5rem", alignItems: "flex-start" }}>
-                <span style={{ fontSize: "0.9rem", flexShrink: 0 }}>💡</span>
-                <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: "0.78rem", color: "#15803D", lineHeight: "1.6" }}>
-                  WhatsApp disponible hasta las 20:00 hrs en días hábiles.
-                </p>
-              </div>
             </div>
 
             {/* Location */}

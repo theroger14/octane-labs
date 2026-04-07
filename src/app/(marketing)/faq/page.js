@@ -111,7 +111,7 @@ function PageFooter() {
           © {new Date().getFullYear()} Octane Lab · Morelia, Michoacán, México
         </span>
         <div style={{ display: "flex", gap: "1.5rem" }}>
-          {[["Privacidad", "#"], ["Términos", "#"], ["Contacto", "/contact"]].map(([l, h]) => (
+          {[["Contacto", "/contact"]].map(([l, h]) => (
             <Link key={l} href={h} style={{ fontFamily: "'Outfit', sans-serif", fontSize: "0.8rem", color: "#475569", textDecoration: "none", transition: "color 0.2s" }}
               onMouseEnter={(e) => e.currentTarget.style.color = "#F97316"}
               onMouseLeave={(e) => e.currentTarget.style.color = "#475569"}

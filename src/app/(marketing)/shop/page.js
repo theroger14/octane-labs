@@ -27,7 +27,7 @@ export default async function ShopPage() {
               Piezas listas para encargar
             </h1>
             <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: "1rem", color: "#64748B" }}>
-              También podés traer tu propio diseño.
+              También puedes traer tu propio diseño.
             </p>
           </div>
           <Link href="/quote" style={{
