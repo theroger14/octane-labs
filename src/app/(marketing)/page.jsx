@@ -133,26 +133,6 @@ function Hero() {
   )
 }
 
-// ─── TRUST BAR ────────────────────────────────────────────────────────────────
-function TrustBar() {
-  const logos = ["UNAM", "ITESM", "Startup MX", "Fab Lab", "CONACYT", "IPN"]
-  return (
-    <section style={{ background: "#F8FAFC", borderTop: "1px solid #E2E8F0", borderBottom: "1px solid #E2E8F0", padding: "1.75rem 1.5rem" }}>
-      <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", alignItems: "center", gap: "2rem", flexWrap: "wrap", justifyContent: "center" }}>
-        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: "0.78rem", fontWeight: "500", color: "#94A3B8", letterSpacing: "0.06em" }}>
-          CONFIADO POR
-        </span>
-        {logos.map((l) => (
-          /* ▼ Reemplaza con: <img src={"/logos/" + l + ".svg"} alt={l} height="22" style={{ opacity: 0.35 }} /> */
-          <span key={l} style={{ fontFamily: "'Outfit', sans-serif", fontWeight: "700", fontSize: "0.85rem", color: "#CBD5E1", letterSpacing: "0.04em" }}>
-            {l}
-          </span>
-        ))}
-      </div>
-    </section>
-  )
-}
-
 // ─── HOW IT WORKS ─────────────────────────────────────────────────────────────
 function HowItWorks() {
   const [ref, visible] = useReveal()
@@ -374,53 +354,6 @@ function PortfolioCard({ item, index, visible }) {
   )
 }
 
-// ─── TESTIMONIALS ─────────────────────────────────────────────────────────────
-function Testimonials() {
-  const [ref, visible] = useReveal()
-
-  const reviews = [
-    { name: "Ing. Carlos M.", role: "CTO · Startup de Robótica", text: "Recibí mi prototipo en 36 horas. La precisión fue exactamente la que necesitaba para el ensamble. Volveré seguro.", avatar: "#FDA4AF" },
-    { name: "Dra. Ana L.", role: "Investigadora · UNAM", text: "Imprimieron modelos anatómicos con una resolución impresionante. El equipo respondió mis dudas técnicas en minutos.", avatar: "#86EFAC" },
-    { name: "Luis R.", role: "Diseñador Industrial", text: "Probé 3 empresas antes. OctaneLab fue la única que entregó a tiempo y con el acabado correcto en el primer intento.", avatar: "#93C5FD" },
-  ]
-
-  return (
-    <section style={{ background: "#F8FAFC", padding: "7rem 1.5rem" }}>
-      <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-        <div ref={ref} style={{ textAlign: "center", marginBottom: "3.5rem", opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(20px)", transition: "opacity 0.6s, transform 0.6s" }}>
-          <h2 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: "800", fontSize: "clamp(2rem, 4vw, 2.75rem)", color: "#0F172A", letterSpacing: "-0.02em" }}>
-            Lo que dicen quienes ya<br />fabricaron con nosotros
-          </h2>
-        </div>
-
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.25rem" }} className="ol-reviews-grid">
-          {reviews.map((r, i) => (
-            <div key={r.name} style={{
-              background: "#fff", border: "1px solid #E2E8F0", borderRadius: "20px", padding: "2rem",
-              opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(24px)",
-              transition: "opacity 0.5s ease " + i * 0.1 + "s, transform 0.5s ease " + i * 0.1 + "s",
-            }}>
-              <div style={{ display: "flex", gap: "3px", marginBottom: "1rem" }}>
-                {[...Array(5)].map((_, j) => <span key={j} style={{ color: "#F59E0B", fontSize: "0.9rem" }}>★</span>)}
-              </div>
-              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: "0.9rem", color: "#475569", lineHeight: "1.75", marginBottom: "1.5rem" }}>
-                {'"' + r.text + '"'}
-              </p>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                <div style={{ width: "38px", height: "38px", borderRadius: "50%", background: r.avatar, flexShrink: 0 }} />
-                <div>
-                  <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: "700", fontSize: "0.875rem", color: "#0F172A" }}>{r.name}</div>
-                  <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: "0.75rem", color: "#94A3B8" }}>{r.role}</div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
 // ─── CTA FINAL ────────────────────────────────────────────────────────────────
 function CTAFinal() {
   const [ref, visible] = useReveal()
@@ -476,7 +409,7 @@ function Footer() {
   return (
     <footer style={{ background: "#0F172A", padding: "5rem 1.5rem 2.5rem" }}>
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: "3rem", marginBottom: "4rem" }} className="ol-footer-grid">
+        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "3rem", marginBottom: "4rem" }} className="ol-footer-grid">
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "1rem" }}>
               <img src="/images/hero/Logo.png" alt="Octane Lab logo" style={{ width: "28px", height: "28px", objectFit: "contain" }} />
@@ -488,23 +421,10 @@ function Footer() {
               Manufactura aditiva de precisión en Morelia, Michoacán.
               Prototipos y piezas funcionales para ingenieros, diseñadores y empresas.
             </p>
-            <div style={{ display: "flex", gap: "0.6rem", marginTop: "1.25rem" }}>
-              {/* ▼ Reemplaza href="#" con tus URLs reales */}
-              {["Instagram", "LinkedIn", "WhatsApp"].map((r) => (
-                <a key={r} href="#" style={{ fontFamily: "'Outfit', sans-serif", fontSize: "0.72rem", fontWeight: "500", color: "#475569", textDecoration: "none", background: "#1E293B", padding: "0.35rem 0.75rem", borderRadius: "8px", transition: "all 0.2s" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = "#F97316"; e.currentTarget.style.color = "#fff" }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = "#1E293B"; e.currentTarget.style.color = "#475569" }}
-                >
-                  {r}
-                </a>
-              ))}
-            </div>
           </div>
 
           {[
-            { title: "Servicios", links: [["Prototipado FDM", "#"], ["Impresión SLA", "#"], ["Nylon & SLS", "#"], ["Series cortas", "#"], ["Multicolor", "#"]] },
-            { title: "Empresa",   links: [["Sobre nosotros", "#"], ["Portfolio", "#portfolio"], ["FAQ", "/faq"], ["Blog", "#"], ["Contacto", "/contact"]] },
-            { title: "Legal",     links: [["Privacidad", "#"], ["Términos de uso", "#"], ["Política de envíos", "#"], ["Garantía", "#"]] },
+            { title: "Empresa", links: [["Portfolio", "#portfolio"], ["FAQ", "/faq"], ["Contacto", "/contact"]] },
           ].map((col) => (
             <div key={col.title}>
               <div style={{ fontFamily: "'Outfit', sans-serif", fontWeight: "700", fontSize: "0.8rem", color: "#94A3B8", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "1.25rem" }}>
@@ -546,8 +466,7 @@ export default function HomePage() {
           .ol-hero-grid      { grid-template-columns: 1fr !important; }
           .ol-steps-grid     { grid-template-columns: repeat(2, 1fr) !important; }
           .ol-services-grid  { grid-template-columns: 1fr !important; }
-          .ol-reviews-grid   { grid-template-columns: 1fr !important; }
-          .ol-footer-grid    { grid-template-columns: 1fr 1fr !important; }
+          .ol-footer-grid    { grid-template-columns: 1fr !important; }
           .ol-portfolio-grid { grid-template-columns: 1fr 1fr !important; }
         }
         @media (max-width: 768px) {
@@ -558,11 +477,9 @@ export default function HomePage() {
       `}</style>
 
       <Hero />
-      <TrustBar />
       <HowItWorks />
       <Services />
       <Portfolio />
-      <Testimonials />
       <CTAFinal />
       <Footer />
     </>

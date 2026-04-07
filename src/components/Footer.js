@@ -7,9 +7,6 @@ export default function Footer() {
         <p className="text-sm text-zinc-600">
           © {new Date().getFullYear()} Octane Labs. Impresión 3D.
         </p>
-        <p className="text-sm text-zinc-600">
-          Hecho con Next.js • Portafolio Full-Stack
-        </p>
       </Container>
     </footer>
   );
