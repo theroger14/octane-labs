@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { useCart } from "@/context/CartContext"
+import WishlistButton from "@/components/WishlistButton"
 
 export default function ProductCard({ product }) {
   const { id, name, description, price, material, category, image_url } = product
@@ -12,7 +13,7 @@ export default function ProductCard({ product }) {
 
       {/* Image */}
       <Link href={`/shop/${id}`} className="no-underline block">
-        <div className="aspect-square bg-zinc-100 flex items-center justify-center overflow-hidden">
+        <div className="aspect-square bg-zinc-100 flex items-center justify-center overflow-hidden relative">
           {image_url ? (
             <img
               src={image_url}
@@ -27,6 +28,10 @@ export default function ProductCard({ product }) {
               <span className="text-xs">Sin imagen</span>
             </div>
           )}
+          {/* Wishlist button overlay */}
+          <div style={{ position: "absolute", top: "10px", right: "10px" }}>
+            <WishlistButton productId={id} size={18} />
+          </div>
         </div>
       </Link>
 

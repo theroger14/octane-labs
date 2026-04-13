@@ -139,7 +139,7 @@ export default function CartDrawer() {
               </span>
             </div>
             <Link
-              href="/quote"
+              href="/checkout"
               onClick={() => setDrawerOpen(false)}
               style={{
                 display: "block", textAlign: "center",
@@ -149,7 +149,7 @@ export default function CartDrawer() {
                 boxShadow: "0 4px 14px rgba(249,115,22,0.3)",
               }}
             >
-              Cotizar pedido →
+              Finalizar compra →
             </Link>
           </div>
         )}

@@ -4,69 +4,6 @@ import { useState } from "react"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
 
-// ─── NAV + FOOTER (shared) ────────────────────────────────────────────────────
-function PageNav() {
-  const [menuOpen, setMenuOpen] = useState(false)
-  return (
-    <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, background: "rgba(255,255,255,0.92)", backdropFilter: "blur(16px)", borderBottom: "1px solid #E2E8F0", padding: "0 1.5rem" }}>
-      <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", height: "68px" }}>
-        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "8px" }}>
-          <div style={{ width: "32px", height: "32px", background: "#F97316", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span style={{ color: "#fff", fontWeight: "900", fontSize: "1rem", fontFamily: "'Outfit', sans-serif" }}>O</span>
-          </div>
-          <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: "700", fontSize: "1.15rem", color: "#1E293B" }}>
-            Octane<span style={{ color: "#F97316" }}>Lab</span>
-          </span>
-        </Link>
-        <div style={{ display: "flex", alignItems: "center", gap: "2.5rem" }} className="ol-desktop-nav">
-          {[["Servicios", "/#servicios"], ["Proceso", "/#proceso"], ["Portfolio", "/#portfolio"], ["FAQ", "/faq"]].map(([l, h]) => (
-            <Link key={l} href={h} style={{ fontFamily: "'Outfit', sans-serif", fontSize: "0.9rem", fontWeight: "500", color: "#64748B", textDecoration: "none", transition: "color 0.2s" }}
-              onMouseEnter={(e) => e.currentTarget.style.color = "#1E293B"}
-              onMouseLeave={(e) => e.currentTarget.style.color = "#64748B"}
-            >{l}</Link>
-          ))}
-        </div>
-        <div style={{ display: "flex", gap: "0.75rem" }} className="ol-desktop-nav">
-          <Link href="/contact" style={{ fontFamily: "'Outfit', sans-serif", fontSize: "0.875rem", fontWeight: "600", color: "#F97316", textDecoration: "none", padding: "0.5rem 1rem" }}>
-            Contacto
-          </Link>
-          <Link href="/quote" style={{ fontFamily: "'Outfit', sans-serif", fontSize: "0.875rem", fontWeight: "600", color: "#fff", background: "#F97316", padding: "0.55rem 1.25rem", borderRadius: "8px", textDecoration: "none", transition: "background 0.2s" }}
-            onMouseEnter={(e) => e.currentTarget.style.background = "#EA6C0A"}
-            onMouseLeave={(e) => e.currentTarget.style.background = "#F97316"}
-          >Cotizar gratis</Link>
-        </div>
-        <button onClick={() => setMenuOpen(!menuOpen)} className="ol-mobile-btn"
-          style={{ display: "none", background: "none", border: "none", cursor: "pointer", padding: "4px", flexDirection: "column", gap: "5px" }}>
-          {[0,1,2].map((i) => <span key={i} style={{ display: "block", width: "22px", height: "2px", background: "#1E293B", borderRadius: "2px" }} />)}
-        </button>
-      </div>
-      {menuOpen && (
-        <div style={{ background: "#fff", borderTop: "1px solid #E2E8F0", padding: "1.25rem 1.5rem 1.75rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
-          {[["Inicio", "/"], ["Servicios", "/#servicios"], ["FAQ", "/faq"], ["Cotizar", "/quote"]].map(([l, h]) => (
-            <Link key={l} href={h} onClick={() => setMenuOpen(false)}
-              style={{ fontFamily: "'Outfit', sans-serif", fontSize: "1rem", fontWeight: "500", color: "#475569", textDecoration: "none" }}>{l}</Link>
-          ))}
-        </div>
-      )}
-    </nav>
-  )
-}
-
-function PageFooter() {
-  return (
-    <footer style={{ background: "#0F172A", padding: "3rem 1.5rem 2rem" }}>
-      <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1.5rem" }}>
-        <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: "700", fontSize: "1rem", color: "#fff" }}>
-          Octane<span style={{ color: "#F97316" }}>Lab</span>
-        </span>
-        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: "0.8rem", color: "#334155" }}>
-          © {new Date().getFullYear()} Octane Lab · Morelia, Michoacán, México
-        </span>
-      </div>
-    </footer>
-  )
-}
-
 // ─── CONTACT CHANNELS ─────────────────────────────────────────────────────────
 const CHANNELS = [
   {
@@ -162,18 +99,6 @@ export default function ContactPage() {
 
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap');
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #F8FAFC; -webkit-font-smoothing: antialiased; }
-        input:focus, select:focus, textarea:focus { border-color: #F97316 !important; box-shadow: 0 0 0 3px rgba(249,115,22,0.12) !important; }
-        .ol-desktop-nav { display: flex; }
-        .ol-mobile-btn  { display: none; }
-        @media (max-width: 768px) { .ol-desktop-nav { display: none !important; } .ol-mobile-btn { display: flex !important; } }
-        @media (max-width: 960px) { .ol-contact-grid { grid-template-columns: 1fr !important; } }
-      `}</style>
-      <PageNav />
-
       {/* Header */}
       <div style={{ background: "linear-gradient(160deg, #fff 60%, #FFF7ED 100%)", paddingTop: "68px" }}>
         <div style={{ maxWidth: "700px", margin: "0 auto", padding: "5rem 1.5rem 4rem", textAlign: "center" }}>
@@ -438,7 +363,6 @@ export default function ContactPage() {
         </div>
       </div>
 
-      <PageFooter />
     </>
   )
 }

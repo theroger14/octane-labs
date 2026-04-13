@@ -3,6 +3,7 @@ import Link from "next/link"
 import { supabase } from "@/lib/supabase"
 import Container from "@/components/Container"
 import ButtonLink from "@/components/ButtonLink"
+import WishlistButton from "@/components/WishlistButton"
 
 export const revalidate = 60
 
@@ -91,10 +92,13 @@ export default async function ProductDetailPage({ params }) {
               )}
             </div>
 
-            {/* Name */}
-            <h1 className="text-2xl sm:text-3xl font-semibold text-zinc-900 mb-4 leading-tight">
-              {product.name}
-            </h1>
+            {/* Name + wishlist */}
+            <div className="flex items-start gap-3 mb-4">
+              <h1 className="text-2xl sm:text-3xl font-semibold text-zinc-900 leading-tight flex-1">
+                {product.name}
+              </h1>
+              <WishlistButton productId={product.id} size={20} />
+            </div>
 
             {/* Description */}
             {product.description && (
