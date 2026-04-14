@@ -8,63 +8,6 @@ import { parseSTL } from "./parse-stl"
 
 const StlViewer = dynamic(() => import("./StlViewer"), { ssr: false })
 
-// ─── NAV + FOOTER ─────────────────────────────────────────────────────────────
-function PageNav() {
-  const [menuOpen, setMenuOpen] = useState(false)
-  return (
-    <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, background: "rgba(255,255,255,0.92)", backdropFilter: "blur(16px)", borderBottom: "1px solid #E2E8F0", padding: "0 1.5rem" }}>
-      <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", height: "68px" }}>
-        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "8px" }}>
-          <div style={{ width: "32px", height: "32px", background: "#F97316", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span style={{ color: "#fff", fontWeight: "900", fontSize: "1rem", fontFamily: "'Outfit', sans-serif" }}>O</span>
-          </div>
-          <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: "700", fontSize: "1.15rem", color: "#1E293B" }}>
-            Octane<span style={{ color: "#F97316" }}>Lab</span>
-          </span>
-        </Link>
-        <div style={{ display: "flex", alignItems: "center", gap: "2.5rem" }} className="ol-desktop-nav">
-          {[["Servicios", "/#servicios"], ["Proceso", "/#proceso"], ["Portfolio", "/#portfolio"], ["FAQ", "/faq"]].map(([l, h]) => (
-            <Link key={l} href={h} style={{ fontFamily: "'Outfit', sans-serif", fontSize: "0.9rem", fontWeight: "500", color: "#64748B", textDecoration: "none", transition: "color 0.2s" }}
-              onMouseEnter={(e) => e.currentTarget.style.color = "#1E293B"}
-              onMouseLeave={(e) => e.currentTarget.style.color = "#64748B"}
-            >{l}</Link>
-          ))}
-        </div>
-        <Link href="/contact" style={{ fontFamily: "'Outfit', sans-serif", fontSize: "0.875rem", fontWeight: "500", color: "#64748B", textDecoration: "none", padding: "0.5rem 1rem" }} className="ol-desktop-nav">
-          Contacto
-        </Link>
-        <button onClick={() => setMenuOpen(!menuOpen)} className="ol-mobile-btn"
-          style={{ display: "none", background: "none", border: "none", cursor: "pointer", padding: "4px", flexDirection: "column", gap: "5px" }}>
-          {[0, 1, 2].map((i) => <span key={i} style={{ display: "block", width: "22px", height: "2px", background: "#1E293B", borderRadius: "2px" }} />)}
-        </button>
-      </div>
-      {menuOpen && (
-        <div style={{ background: "#fff", borderTop: "1px solid #E2E8F0", padding: "1.25rem 1.5rem 1.75rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
-          {[["Servicios", "/#servicios"], ["Proceso", "/#proceso"], ["FAQ", "/faq"], ["Contacto", "/contact"]].map(([l, h]) => (
-            <Link key={l} href={h} onClick={() => setMenuOpen(false)}
-              style={{ fontFamily: "'Outfit', sans-serif", fontSize: "1rem", fontWeight: "500", color: "#475569", textDecoration: "none" }}>{l}</Link>
-          ))}
-        </div>
-      )}
-    </nav>
-  )
-}
-
-function PageFooter() {
-  return (
-    <footer style={{ background: "#0F172A", padding: "3rem 1.5rem 2rem" }}>
-      <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1.5rem" }}>
-        <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: "700", fontSize: "1rem", color: "#fff" }}>
-          Octane<span style={{ color: "#F97316" }}>Lab</span>
-        </span>
-        <span style={{ fontFamily: "'Outfit', sans-serif", fontSize: "0.8rem", color: "#334155" }}>
-          © {new Date().getFullYear()} Octane Lab · Morelia, México
-        </span>
-      </div>
-    </footer>
-  )
-}
-
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 function fmt(n) {
   return new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 2 }).format(n)
@@ -250,8 +193,6 @@ export default function QuotePage() {
     const mat = materials.find((m) => m.id === selectedMaterialId)
     return (
       <>
-        <style>{GLOBAL_STYLES}</style>
-        <PageNav />
         <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(160deg, #fff 60%, #FFF7ED 100%)", padding: "6rem 1.5rem" }}>
           <div style={{ maxWidth: "520px", width: "100%", textAlign: "center" }}>
             <div style={{ width: "72px", height: "72px", background: "#F0FDF4", border: "2px solid #BBF7D0", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2rem", margin: "0 auto 1.5rem" }}>✅</div>
@@ -287,7 +228,6 @@ export default function QuotePage() {
             </div>
           </div>
         </div>
-        <PageFooter />
       </>
     )
   }
@@ -298,9 +238,6 @@ export default function QuotePage() {
   // ─── MAIN FORM ────────────────────────────────────────────────────────────
   return (
     <>
-      <style>{GLOBAL_STYLES}</style>
-      <PageNav />
-
       {/* Hero */}
       <div style={{ background: "linear-gradient(160deg, #fff 60%, #FFF7ED 100%)", paddingTop: "68px" }}>
         <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "4rem 1.5rem 3rem" }}>
@@ -404,7 +341,7 @@ export default function QuotePage() {
               {materialsLoading ? (
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.75rem" }}>
                   {[1,2,3,4,5,6].map((i) => (
-                    <div key={i} style={{ height: "70px", borderRadius: "12px", background: "#F1F5F9", animation: "pulse 1.5s ease-in-out infinite" }} />
+                    <div key={i} style={{ height: "70px", borderRadius: "12px", background: "#F1F5F9", animation: "pulse-skeleton 1.5s ease-in-out infinite" }} />
                   ))}
                 </div>
               ) : (
@@ -649,7 +586,6 @@ export default function QuotePage() {
         </div>
       </div>
 
-      <PageFooter />
     </>
   )
 }
@@ -711,20 +647,3 @@ const inputStyle = {
   boxSizing: "border-box",
 }
 
-const GLOBAL_STYLES = `
-  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap');
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #F8FAFC; -webkit-font-smoothing: antialiased; }
-  input[type=range] { cursor: pointer; }
-  input:focus, select:focus, textarea:focus { border-color: #F97316 !important; box-shadow: 0 0 0 3px rgba(249,115,22,0.12) !important; }
-  .ol-desktop-nav { display: flex; }
-  .ol-mobile-btn  { display: none; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
-  @media (max-width: 768px) {
-    .ol-desktop-nav { display: none !important; }
-    .ol-mobile-btn { display: flex !important; }
-    .ol-quote-grid { grid-template-columns: 1fr !important; }
-    .ol-materials-grid { grid-template-columns: repeat(2, 1fr) !important; }
-    .ol-confirm-grid { grid-template-columns: 1fr !important; }
-  }
-`

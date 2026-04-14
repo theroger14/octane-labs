@@ -1,8 +1,10 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { useCart } from "@/context/CartContext"
+import { useWishlist } from "@/context/WishlistContext"
+import { supabase } from "@/lib/supabase"
 
 const navLinks = [
   ["Tienda",    "/shop"],
@@ -14,15 +16,43 @@ const navLinks = [
 ]
 
 export default function MarketingNavbar() {
-  const [scrolled, setScrolled] = useState(false)
-  const [menuOpen, setMenuOpen] = useState(false)
+  const [scrolled,    setScrolled]    = useState(false)
+  const [menuOpen,    setMenuOpen]    = useState(false)
+  const [user,        setUser]        = useState(undefined)   // undefined = loading
+  const [acctOpen,    setAcctOpen]    = useState(false)
+  const acctRef = useRef(null)
   const { totalItems, setDrawerOpen } = useCart()
+  const { count: wishlistCount } = useWishlist()
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 48)
     window.addEventListener("scroll", fn)
     return () => window.removeEventListener("scroll", fn)
   }, [])
+
+  // Auth state
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setUser(data.user ?? null))
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+      setUser(session?.user ?? null)
+    })
+    return () => subscription.unsubscribe()
+  }, [])
+
+  // Close account dropdown on outside click
+  useEffect(() => {
+    function handleClick(e) {
+      if (acctRef.current && !acctRef.current.contains(e.target)) setAcctOpen(false)
+    }
+    document.addEventListener("mousedown", handleClick)
+    return () => document.removeEventListener("mousedown", handleClick)
+  }, [])
+
+  async function handleSignOut() {
+    await supabase.auth.signOut()
+    setAcctOpen(false)
+    setUser(null)
+  }
 
   return (
     <>
@@ -81,6 +111,94 @@ export default function MarketingNavbar() {
               )}
             </button>
 
+            {/* Account / Login */}
+            {user === null && (
+              <Link href="/login" style={{
+                fontFamily: "'Outfit', sans-serif", fontSize: "0.875rem", fontWeight: "600",
+                color: "#475569", background: "transparent", padding: "0.55rem 1rem", borderRadius: "8px",
+                textDecoration: "none", border: "1px solid #E2E8F0",
+              }}>
+                Iniciar sesión
+              </Link>
+            )}
+            {user && (
+              <div ref={acctRef} style={{ position: "relative" }}>
+                <button
+                  onClick={() => setAcctOpen(!acctOpen)}
+                  style={{
+                    display: "flex", alignItems: "center", gap: "0.375rem",
+                    fontFamily: "'Outfit', sans-serif", fontSize: "0.875rem", fontWeight: "600",
+                    color: "#475569", background: "#F1F5F9", padding: "0.5rem 0.875rem",
+                    borderRadius: "8px", border: "none", cursor: "pointer", position: "relative",
+                  }}
+                >
+                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                  </svg>
+                  Mi cuenta
+                  <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                  {wishlistCount > 0 && (
+                    <span style={{
+                      position: "absolute", top: "-4px", right: "-4px",
+                      background: "#E11D48", color: "#fff",
+                      fontFamily: "'Outfit', sans-serif", fontWeight: "700",
+                      fontSize: "0.6rem", borderRadius: "999px",
+                      minWidth: "16px", height: "16px",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      padding: "0 3px", border: "2px solid #fff",
+                    }}>
+                      {wishlistCount}
+                    </span>
+                  )}
+                </button>
+
+                {acctOpen && (
+                  <div style={{
+                    position: "absolute", top: "calc(100% + 8px)", right: 0,
+                    background: "#fff", borderRadius: "14px", border: "1px solid #E2E8F0",
+                    boxShadow: "0 8px 24px rgba(15,23,42,0.1)", padding: "0.5rem",
+                    minWidth: "180px", zIndex: 300,
+                  }}>
+                    {[
+                      { href: "/account/orders",    label: "Mis pedidos" },
+                      { href: "/account/addresses", label: "Mis direcciones" },
+                      { href: "/account/wishlist",  label: "Favoritos" },
+                    ].map(({ href, label }) => (
+                      <Link key={href} href={href} onClick={() => setAcctOpen(false)}
+                        style={{
+                          display: "block", padding: "0.6rem 0.875rem",
+                          fontFamily: "'Outfit', sans-serif", fontSize: "0.875rem",
+                          fontWeight: "500", color: "#374151", textDecoration: "none",
+                          borderRadius: "8px", transition: "background 0.15s",
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.background = "#F8FAFC"}
+                        onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                      >
+                        {label}
+                      </Link>
+                    ))}
+                    <div style={{ borderTop: "1px solid #F1F5F9", margin: "0.375rem 0" }} />
+                    <button
+                      onClick={handleSignOut}
+                      style={{
+                        display: "block", width: "100%", textAlign: "left",
+                        padding: "0.6rem 0.875rem",
+                        fontFamily: "'Outfit', sans-serif", fontSize: "0.875rem",
+                        fontWeight: "500", color: "#BE123C", background: "none",
+                        border: "none", cursor: "pointer", borderRadius: "8px",
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.background = "#FFF1F2"}
+                      onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                    >
+                      Cerrar sesión
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
             <Link href="/quote" style={{
               fontFamily: "'Outfit', sans-serif", fontSize: "0.875rem", fontWeight: "600",
               color: "#fff", background: "#F97316", padding: "0.55rem 1.25rem", borderRadius: "8px",
@@ -111,8 +229,40 @@ export default function MarketingNavbar() {
                 {label}
               </Link>
             ))}
+            <div style={{ borderTop: "1px solid #F1F5F9", paddingTop: "0.5rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              {user ? (
+                <>
+                  <Link href="/account/orders" onClick={() => setMenuOpen(false)}
+                    style={{ fontFamily: "'Outfit', sans-serif", fontSize: "0.95rem", fontWeight: "500", color: "#475569", textDecoration: "none" }}>
+                    Mis pedidos
+                  </Link>
+                  <Link href="/account/addresses" onClick={() => setMenuOpen(false)}
+                    style={{ fontFamily: "'Outfit', sans-serif", fontSize: "0.95rem", fontWeight: "500", color: "#475569", textDecoration: "none" }}>
+                    Mis direcciones
+                  </Link>
+                  <Link href="/account/wishlist" onClick={() => setMenuOpen(false)}
+                    style={{ fontFamily: "'Outfit', sans-serif", fontSize: "0.95rem", fontWeight: "500", color: "#475569", textDecoration: "none", display: "flex", alignItems: "center", gap: "0.375rem" }}>
+                    Favoritos
+                    {wishlistCount > 0 && (
+                      <span style={{ background: "#E11D48", color: "#fff", fontFamily: "'Outfit', sans-serif", fontWeight: "700", fontSize: "0.6rem", borderRadius: "999px", minWidth: "16px", height: "16px", display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "0 3px" }}>
+                        {wishlistCount}
+                      </span>
+                    )}
+                  </Link>
+                  <button onClick={() => { handleSignOut(); setMenuOpen(false) }}
+                    style={{ background: "none", border: "none", padding: 0, fontFamily: "'Outfit', sans-serif", fontSize: "0.95rem", fontWeight: "500", color: "#BE123C", textAlign: "left", cursor: "pointer" }}>
+                    Cerrar sesión
+                  </button>
+                </>
+              ) : (
+                <Link href="/login" onClick={() => setMenuOpen(false)}
+                  style={{ fontFamily: "'Outfit', sans-serif", fontSize: "0.95rem", fontWeight: "500", color: "#475569", textDecoration: "none" }}>
+                  Iniciar sesión
+                </Link>
+              )}
+            </div>
             <Link href="/quote" onClick={() => setMenuOpen(false)}
-              style={{ fontFamily: "'Outfit', sans-serif", fontWeight: "600", fontSize: "0.95rem", background: "#F97316", color: "#fff", padding: "0.8rem 1.2rem", borderRadius: "10px", textAlign: "center", textDecoration: "none", marginTop: "0.5rem" }}>
+              style={{ fontFamily: "'Outfit', sans-serif", fontWeight: "600", fontSize: "0.95rem", background: "#F97316", color: "#fff", padding: "0.8rem 1.2rem", borderRadius: "10px", textAlign: "center", textDecoration: "none" }}>
               Cotizar gratis
             </Link>
           </div>

@@ -1,5 +1,4 @@
 import "./globals.css";
-import Footer from "@/components/Footer";
 
 export const metadata = {
   title: "Octane Labs | Impresión 3D",
@@ -15,8 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
       </head>
       <body>
-        <main>{children}</main>
-        <Footer />
+        {children}
       </body>
     </html>
   );

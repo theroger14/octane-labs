@@ -15,4 +15,33 @@
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
   }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: #F97316 !important;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12) !important;
+    outline: none;
+  }
+
+  input[type=range] {
+    cursor: pointer;
+    accent-color: #F97316;
+  }
+}
+
+@keyframes pulse-skeleton {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Quote page responsive grid */
+@media (max-width: 768px) {
+  .ol-quote-grid      { grid-template-columns: 1fr !important; }
+  .ol-materials-grid  { grid-template-columns: repeat(2, 1fr) !important; }
+  .ol-confirm-grid    { grid-template-columns: 1fr !important; }
+  .ol-contact-grid    { grid-template-columns: 1fr !important; }
+  .ol-channels-grid   { grid-template-columns: 1fr !important; }
 }
