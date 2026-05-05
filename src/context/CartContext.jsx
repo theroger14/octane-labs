@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useEffect, useReducer, useState } from "react"
+import { createContext, useContext, useEffect, useReducer, useRef, useState } from "react"
 
 const CartContext = createContext(null)
 
@@ -29,15 +29,18 @@ function reducer(state, action) {
 export function CartProvider({ children }) {
   const [items, dispatch] = useReducer(reducer, [])
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const hydratedRef = useRef(false)
 
   useEffect(() => {
     try {
       const saved = localStorage.getItem("ol_cart")
       if (saved) dispatch({ type: "INIT", items: JSON.parse(saved) })
     } catch {}
+    hydratedRef.current = true
   }, [])
 
   useEffect(() => {
+    if (!hydratedRef.current) return
     localStorage.setItem("ol_cart", JSON.stringify(items))
   }, [items])
 
@@ -47,7 +50,10 @@ export function CartProvider({ children }) {
   }
   const removeItem = (id) => dispatch({ type: "REMOVE", id })
   const setQty = (id, qty) => dispatch({ type: "SET_QTY", id, qty })
-  const clearCart = () => dispatch({ type: "CLEAR" })
+  const clearCart = () => {
+    dispatch({ type: "CLEAR" })
+    try { localStorage.removeItem("ol_cart") } catch {}
+  }
 
   const totalItems = items.reduce((s, i) => s + i.qty, 0)
   const totalPrice = items.reduce((s, i) => s + (i.price || 0) * i.qty, 0)
