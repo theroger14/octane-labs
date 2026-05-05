@@ -1,16 +1,18 @@
 import { createSupabaseServer } from "@/lib/supabaseServer"
 import { redirect } from "next/navigation"
 import Link from "next/link"
+import PayNowButton from "@/components/PayNowButton"
 
 export const metadata = { title: "Mis pedidos | Octane Labs" }
 
 const STATUS_LABELS = {
-  pending:   { label: "Pendiente",  bg: "#FFF7ED", color: "#C2410C" },
-  paid:      { label: "Pagado",     bg: "#F0FDF4", color: "#15803D" },
-  printing:  { label: "Imprimiendo",bg: "#EFF6FF", color: "#1D4ED8" },
-  shipped:   { label: "Enviado",    bg: "#F5F3FF", color: "#6D28D9" },
-  delivered: { label: "Entregado",  bg: "#F0FDF4", color: "#15803D" },
-  cancelled: { label: "Cancelado",  bg: "#FFF1F2", color: "#BE123C" },
+  pending:         { label: "Pendiente de pago", bg: "#FFF7ED", color: "#C2410C" },
+  paid:            { label: "Pagado",            bg: "#F0FDF4", color: "#15803D" },
+  printing:        { label: "Imprimiendo",       bg: "#EFF6FF", color: "#1D4ED8" },
+  shipped:         { label: "Enviado",           bg: "#F5F3FF", color: "#6D28D9" },
+  delivered:       { label: "Entregado",         bg: "#F0FDF4", color: "#15803D" },
+  cancelled:       { label: "Cancelado",         bg: "#FFF1F2", color: "#BE123C" },
+  payment_failed:  { label: "Pago fallido",      bg: "#FFF1F2", color: "#BE123C" },
 }
 
 function StatusBadge({ status }) {
@@ -85,20 +87,18 @@ export default async function OrdersPage() {
       {/* Orders list */}
       {orders && orders.length > 0 && (
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          {orders.map(order => (
-            <Link
-              key={order.id}
-              href={`/account/orders/${order.id}`}
-              style={{ textDecoration: "none" }}
-            >
-              <div style={{
-                background: "#fff",
-                border: "1px solid #E2E8F0",
-                borderRadius: "16px",
-                padding: "1.25rem 1.5rem",
-                transition: "border-color 0.2s, box-shadow 0.2s",
-                cursor: "pointer",
-              }}
+          {orders.map(order => {
+            const needsPayment = order.status === "pending" || order.status === "payment_failed"
+            return (
+              <div
+                key={order.id}
+                style={{
+                  background: "#fff",
+                  border: "1px solid #E2E8F0",
+                  borderRadius: "16px",
+                  overflow: "hidden",
+                  transition: "border-color 0.2s, box-shadow 0.2s",
+                }}
                 onMouseEnter={e => {
                   e.currentTarget.style.borderColor = "#F97316"
                   e.currentTarget.style.boxShadow = "0 4px 16px rgba(249,115,22,0.1)"
@@ -108,40 +108,65 @@ export default async function OrdersPage() {
                   e.currentTarget.style.boxShadow = "none"
                 }}
               >
-                {/* Order header */}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.75rem", flexWrap: "wrap", marginBottom: "1rem" }}>
-                  <div>
-                    <p style={{ fontFamily: "'Roboto Mono', monospace", fontWeight: "700", fontSize: "0.875rem", color: "#0F172A", margin: "0 0 0.25rem" }}>
-                      {order.order_number}
-                    </p>
-                    <p style={{ fontSize: "0.8rem", color: "#94A3B8", margin: 0 }}>
-                      {fmtDate(order.created_at)}
-                    </p>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                    <StatusBadge status={order.status} />
-                    <span style={{ fontWeight: "800", fontSize: "1.05rem", color: "#0F172A" }}>
-                      {fmt(order.total)}
-                    </span>
-                  </div>
-                </div>
+                {/* Clickable area → order detail */}
+                <Link href={`/account/orders/${order.id}`} style={{ textDecoration: "none", display: "block", padding: "1.25rem 1.5rem" }}>
 
-                {/* Items preview */}
-                {order.order_items && order.order_items.length > 0 && (
-                  <div style={{ borderTop: "1px solid #F1F5F9", paddingTop: "0.875rem" }}>
-                    <p style={{ fontSize: "0.8rem", color: "#64748B", margin: "0 0 0.375rem" }}>
-                      {order.order_items.length} {order.order_items.length === 1 ? "producto" : "productos"}:
+                  {/* Order header */}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.75rem", flexWrap: "wrap", marginBottom: "1rem" }}>
+                    <div>
+                      <p style={{ fontFamily: "'Roboto Mono', monospace", fontWeight: "700", fontSize: "0.875rem", color: "#0F172A", margin: "0 0 0.25rem" }}>
+                        {order.order_number}
+                      </p>
+                      <p style={{ fontSize: "0.8rem", color: "#94A3B8", margin: 0 }}>
+                        {fmtDate(order.created_at)}
+                      </p>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                      <StatusBadge status={order.status} />
+                      <span style={{ fontWeight: "800", fontSize: "1.05rem", color: "#0F172A" }}>
+                        {fmt(order.total)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Items preview */}
+                  {order.order_items && order.order_items.length > 0 && (
+                    <div style={{ borderTop: "1px solid #F1F5F9", paddingTop: "0.875rem" }}>
+                      <p style={{ fontSize: "0.8rem", color: "#64748B", margin: "0 0 0.375rem" }}>
+                        {order.order_items.length} {order.order_items.length === 1 ? "producto" : "productos"}:
+                      </p>
+                      <p style={{ fontSize: "0.82rem", color: "#475569", margin: 0, lineHeight: "1.6" }}>
+                        {order.order_items.map(item =>
+                          `${item.name}${item.quantity > 1 ? ` ×${item.quantity}` : ""}`
+                        ).join(" · ")}
+                      </p>
+                    </div>
+                  )}
+                </Link>
+
+                {/* Pay now row — outside Link to avoid nested interactive elements */}
+                {needsPayment && (
+                  <div style={{
+                    borderTop: "1px solid #F1F5F9",
+                    padding: "0.875rem 1.5rem",
+                    background: "#FAFAFA",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: "0.75rem",
+                    flexWrap: "wrap",
+                  }}>
+                    <p style={{ fontSize: "0.8rem", color: "#64748B", margin: 0 }}>
+                      {order.status === "payment_failed"
+                        ? "El pago anterior falló. Intenta con otra tarjeta."
+                        : "Este pedido está esperando tu pago."}
                     </p>
-                    <p style={{ fontSize: "0.82rem", color: "#475569", margin: 0, lineHeight: "1.6" }}>
-                      {order.order_items.map(item =>
-                        `${item.name}${item.quantity > 1 ? ` ×${item.quantity}` : ""}`
-                      ).join(" · ")}
-                    </p>
+                    <PayNowButton orderId={order.id} />
                   </div>
                 )}
               </div>
-            </Link>
-          ))}
+            )
+          })}
         </div>
       )}
     </div>

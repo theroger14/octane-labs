@@ -7,12 +7,13 @@ export async function generateMetadata({ params }) {
 }
 
 const STATUS_LABELS = {
-  pending:   { label: "Pendiente",   bg: "#FFF7ED", color: "#C2410C" },
-  paid:      { label: "Pagado",      bg: "#F0FDF4", color: "#15803D" },
-  printing:  { label: "Imprimiendo", bg: "#EFF6FF", color: "#1D4ED8" },
-  shipped:   { label: "Enviado",     bg: "#F5F3FF", color: "#6D28D9" },
-  delivered: { label: "Entregado",   bg: "#F0FDF4", color: "#15803D" },
-  cancelled: { label: "Cancelado",   bg: "#FFF1F2", color: "#BE123C" },
+  pending:        { label: "Pendiente de pago", bg: "#FFF7ED", color: "#C2410C" },
+  paid:           { label: "Pagado",            bg: "#F0FDF4", color: "#15803D" },
+  printing:       { label: "Imprimiendo",       bg: "#EFF6FF", color: "#1D4ED8" },
+  shipped:        { label: "Enviado",           bg: "#F5F3FF", color: "#6D28D9" },
+  delivered:      { label: "Entregado",         bg: "#F0FDF4", color: "#15803D" },
+  cancelled:      { label: "Cancelado",         bg: "#FFF1F2", color: "#BE123C" },
+  payment_failed: { label: "Pago fallido",      bg: "#FFF1F2", color: "#BE123C" },
 }
 
 function StatusBadge({ status }) {

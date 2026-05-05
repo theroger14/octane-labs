@@ -479,7 +479,7 @@ export default function HomePage() {
       <Hero />
       <HowItWorks />
       <Services />
-      <Portfolio />
+      {/* <Portfolio /> */}
       <CTAFinal />
       <Footer />
     </>

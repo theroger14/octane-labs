@@ -3,7 +3,6 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useCart } from "@/context/CartContext"
-import { createOrder } from "@/app/actions/orders"
 import { calculateShipping, SHIPPING_THRESHOLD } from "@/lib/shipping"
 import { supabase } from "@/lib/supabase"
 import AddressForm, { EMPTY_ADDRESS, validateAddress } from "@/components/AddressForm"
@@ -63,7 +62,7 @@ function AddressCard({ addr, selected, onSelect }) {
 
 // ─── Main checkout client ──────────────────────────────────────────────────────
 export default function CheckoutClient({ user, savedAddresses }) {
-  const { items, totalPrice, clearCart } = useCart()
+  const { items, totalPrice } = useCart()
 
   const subtotal = totalPrice
   const shipping  = calculateShipping(subtotal)
@@ -81,7 +80,6 @@ export default function CheckoutClient({ user, savedAddresses }) {
   // Submit state
   const [submitting,   setSubmitting]  = useState(false)
   const [submitError,  setSubmitError] = useState("")
-  const [orderDone,    setOrderDone]   = useState(null)
 
   function handleAddrChange(field, value) {
     setNewAddr(prev => ({ ...prev, [field]: value }))
@@ -130,16 +128,12 @@ export default function CheckoutClient({ user, savedAddresses }) {
     setSubmitting(true)
     setSubmitError("")
 
-    let addressId       = selectedId
-    let addressSnapshot = null
+    let addressId = selectedId
 
     if (showNewForm) {
       const saved = await saveNewAddress()
       if (!saved) { setSubmitting(false); return }
-      addressId       = saved.id
-      addressSnapshot = saved
-    } else {
-      addressSnapshot = savedAddresses.find(a => a.id === selectedId) || null
+      addressId = saved.id
     }
 
     if (!addressId) {
@@ -148,62 +142,30 @@ export default function CheckoutClient({ user, savedAddresses }) {
       return
     }
 
-    const result = await createOrder({ items, addressId, addressSnapshot, notes: null })
+    try {
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: items.map(i => ({ id: i.id, qty: i.qty })),
+          shipping_address_id: addressId,
+        }),
+      })
 
-    if (result.error) {
-      setSubmitError(result.error)
+      const data = await res.json()
+
+      if (!res.ok) {
+        setSubmitError(data.error || "Error al procesar el pago")
+        setSubmitting(false)
+        return
+      }
+
+      // Cart is cleared on the success page after Stripe confirms payment
+      window.location.href = data.url
+    } catch {
+      setSubmitError("Error de red. Por favor intenta de nuevo.")
       setSubmitting(false)
-      return
     }
-
-    clearCart()
-    setOrderDone(result.order)
-  }
-
-  // ── Success screen ─────────────────────────────────────────────────────────
-  if (orderDone) {
-    return (
-      <div style={{
-        minHeight: "100vh", background: "#F8FAFC",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        padding: "2rem 1.5rem", fontFamily: "'Outfit', sans-serif",
-      }}>
-        <div style={{ maxWidth: "520px", width: "100%", textAlign: "center" }}>
-          <div style={{ fontSize: "4rem", marginBottom: "1.25rem" }}>✅</div>
-          <h1 style={{ fontWeight: "800", fontSize: "1.75rem", color: "#0F172A", marginBottom: "0.75rem", letterSpacing: "-0.02em" }}>
-            ¡Pedido recibido!
-          </h1>
-          <p style={{ color: "#64748B", fontSize: "1rem", marginBottom: "0.375rem" }}>
-            Tu pedido{" "}
-            <strong style={{ color: "#0F172A", fontFamily: "'Roboto Mono', monospace" }}>
-              {orderDone.order_number}
-            </strong>{" "}
-            ha sido registrado.
-          </p>
-          <p style={{ color: "#64748B", fontSize: "0.875rem", marginBottom: "2.5rem" }}>
-            Te contactaremos al email <strong style={{ color: "#0F172A" }}>{user.email}</strong> con los detalles del pago.
-          </p>
-          <div style={{ display: "flex", gap: "0.875rem", justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="/account/orders" style={{
-              background: "#F97316", color: "#fff", fontWeight: "700",
-              padding: "0.875rem 1.75rem", borderRadius: "12px",
-              textDecoration: "none", boxShadow: "0 4px 14px rgba(249,115,22,0.3)",
-              fontFamily: "'Outfit', sans-serif", fontSize: "0.95rem",
-            }}>
-              Ver mis pedidos
-            </Link>
-            <Link href="/shop" style={{
-              background: "#fff", color: "#0F172A", fontWeight: "600",
-              padding: "0.875rem 1.75rem", borderRadius: "12px",
-              textDecoration: "none", border: "1px solid #E2E8F0",
-              fontFamily: "'Outfit', sans-serif", fontSize: "0.95rem",
-            }}>
-              Seguir comprando
-            </Link>
-          </div>
-        </div>
-      </div>
-    )
   }
 
   // ── Empty cart ─────────────────────────────────────────────────────────────
@@ -435,11 +397,11 @@ export default function CheckoutClient({ user, savedAddresses }) {
                     transition: "background 0.2s",
                   }}
                 >
-                  {submitting ? "Procesando..." : "Confirmar pedido →"}
+                  {submitting ? "Procesando..." : "Continuar al pago →"}
                 </button>
 
                 <p style={{ fontSize: "0.72rem", color: "#94A3B8", textAlign: "center", marginTop: "0.875rem", lineHeight: "1.5" }}>
-                  Al confirmar, nuestro equipo te contactará con los detalles del pago. Solo enviamos dentro de México.
+                  Serás redirigido a Stripe para completar tu pago de forma segura. Solo enviamos dentro de México.
                 </p>
               </div>
             </div>
